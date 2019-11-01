@@ -1,0 +1,599 @@
+{
+  "metadata": {
+    "spec-version": "1.5"
+  },
+  "display-name": "Jira",
+  "configuration-groups": [
+    {
+      "label": "General",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Jira URL",
+          "name": "jiraUrl"
+        }
+      ]
+    },
+    {
+      "label": "Authentication",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Username",
+          "name": "username"
+        },
+        {
+          "widget-type": "password",
+          "label": "Password",
+          "name": "password"
+        }
+      ]
+    },
+    {
+      "label": "Advanced",
+      "properties": [
+        {
+          "widget-type": "select",
+          "label": "Filter Mode",
+          "name": "filterMode",
+          "widget-attributes": {
+            "default": "Basic",
+            "values": [
+              "Basic",
+              "JQL",
+              "JIRA Filter Id"
+            ]
+          }
+        },
+        {
+          "widget-type": "csv",
+          "label": "Projects",
+          "name": "projects"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Issue Types",
+          "name": "issueTypes"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Statuses",
+          "name": "statuses"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Priorities",
+          "name": "priorities"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Reporters",
+          "name": "reporters"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Assignees",
+          "name": "assignees"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Fix Versions",
+          "name": "fixVersions"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Affected Versions",
+          "name": "affectedVersions"
+        },
+        {
+          "widget-type": "csv",
+          "label": "Labels",
+          "name": "labels"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Last Update Start Date",
+          "name": "lastUpdateStartDate",
+          "widget-attributes" : {
+            "placeholder": "Last Update start date in format yyyy-MM-dd HH:mm"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Last Update End Date",
+          "name": "lastUpdateEndDate",
+          "widget-attributes" : {
+            "placeholder": "Last Update end date in format yyyy-MM-dd HH:mm"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "JQL Query",
+          "name": "jqlQuery"
+        },
+        {
+          "widget-type": "number",
+          "label": "JIRA Filter Id",
+          "name": "jiraFilterId"
+        },
+        {
+          "widget-type": "number",
+          "label": "Max Split Size",
+          "name": "maxIssuesPerRequest",
+          "widget-attributes": {
+            "min": "0",
+            "default": "50"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "schema",
+      "widget-type": "schema",
+      "widget-attributes": {
+        "default-schema": {
+          "name": "fileRecord",
+          "type": "record",
+          "fields": [
+            {
+              "name": "key",
+              "type": "string"
+            },
+            {
+              "name": "summary",
+              "type": "string"
+            },
+            {
+              "name": "id",
+              "type": "long"
+            },
+            {
+              "name": "project",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "type": ["string", "null"]
+            },
+            {
+              "name": "resolution",
+              "type": ["string", "null"]
+            },
+            {
+              "name": "reporter",
+              "type": [{
+                "type": "record",
+                "name": "ReporterRecord",
+                "fields": [
+                  {"name": "name", "type": "string"},
+                  {"name": "displayName", "type": "string"},
+                  {"name": "emailAddress", "type": ["string", "null"]},
+                  {"name": "active", "type": "boolean"},
+                  {"name": "timezone", "type": ["string", "null"]},
+                  {
+                    "name": "groups",
+                    "type": [{
+                      "type": "array",
+                      "items": "string"
+                    }, "null"]
+                  },
+                  {"name": "avatarUri", "type": "string"}
+                ]
+              }, "null"]
+            },
+            {
+              "name": "assignee",
+              "type": [{
+                "type": "record",
+                "name": "AssigneeRecord",
+                "fields": [
+                  {"name": "name", "type": "string"},
+                  {"name": "displayName", "type": "string"},
+                  {"name": "emailAddress", "type": ["string", "null"]},
+                  {"name": "active", "type": "boolean"},
+                  {"name": "timezone", "type": ["string", "null"]},
+                  {
+                    "name": "groups",
+                    "type": [{
+                      "type": "array",
+                      "items": "string"
+                    }, "null"]
+                  },
+                  {"name": "avatarUri", "type": "string"}
+                ]
+              }, "null"]
+            },
+            {
+              "name": "fields",
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "FieldRecord",
+                  "fields": [
+                    {
+                      "name": "id",
+                      "type": "string"
+                    },
+                    {
+                      "name": "name",
+                      "type": "string"
+                    },
+                    {
+                      "name": "type",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    {
+                      "name": "value",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "affectedVersions",
+              "type": [{
+                "type": "array",
+                "items": "string"
+              }, "null"]
+            },
+            {
+              "name": "fixVersions",
+              "type": [{
+                "type": "array",
+                "items": "string"
+              }, "null"]
+            },
+            {
+              "name": "components",
+              "type": {
+                "type": "array",
+                "items": "string"
+              }
+            },
+            {
+              "name": "priority",
+              "type": ["string", "null"]
+            },
+            {
+              "name": "issueType",
+              "type": "string"
+            },
+            {
+              "name": "isSubtask",
+              "type": "boolean"
+            },
+            {
+              "name": "creationDate",
+              "type": {
+                "type": "long",
+                "logicalType": "timestamp-micros"
+              }
+            },
+            {
+              "name": "updateDate",
+              "type": {
+                "type": "long",
+                "logicalType": "timestamp-micros"
+              }
+            },
+            {
+              "name": "dueDate",
+              "type": [{
+                "type": "long",
+                "logicalType": "timestamp-micros"
+              }, "null"]
+            },
+            {
+              "name": "attachments",
+              "type": [{
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "AttachmentRecord",
+                  "fields": [
+                    {
+                      "name": "filename",
+                      "type": "string"
+                    },
+                    {
+                      "name": "author",
+                      "type": "string"
+                    },
+                    {
+                      "name": "creationDate",
+                      "type": {
+                        "type": "long",
+                        "logicalType": "timestamp-micros"
+                      }
+                    },
+                    {
+                      "name": "size",
+                      "type": "long"
+                    },
+                    {
+                      "name": "mimeType",
+                      "type": "string"
+                    },
+                    {
+                      "name": "contentUri",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }, "null"]
+            },
+            {
+              "name": "comments",
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "CommentRecord",
+                  "fields": [
+                    {
+                      "name": "author",
+                      "type": ["string", "null"]
+                    },
+                    {
+                      "name": "updateAuthor",
+                      "type": ["string", "null"]
+                    },
+                    {
+                      "name": "creationDate",
+                      "type": {
+                        "type": "long",
+                        "logicalType": "timestamp-micros"
+                      }
+                    },
+                    {
+                      "name": "updateDate",
+                      "type": {
+                        "type": "long",
+                        "logicalType": "timestamp-micros"
+                      }
+                    },
+                    {
+                      "name": "body",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "issueLinks",
+              "type": [{
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "issueLinkRecord",
+                  "fields": [
+                    {
+                      "name": "type",
+                      "type": "string"
+                    },
+                    {
+                      "name": "link",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }, "null"]
+            },
+            {
+              "name": "votes",
+              "type": "int"
+            },
+            {
+              "name": "worklog",
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "WorklogRecord",
+                  "fields": [
+                    {
+                      "name": "author",
+                      "type": "string"
+                    },
+                    {
+                      "name": "updateAuthor",
+                      "type": "string"
+                    },
+                    {
+                      "name": "startDate",
+                      "type": {
+                        "type": "long",
+                        "logicalType": "timestamp-micros"
+                      }
+                    },
+                    {
+                      "name": "creationDate",
+                      "type": {
+                        "type": "long",
+                        "logicalType": "timestamp-micros"
+                      }
+                    },
+                    {
+                      "name": "updateDate",
+                      "type": {
+                        "type": "long",
+                        "logicalType": "timestamp-micros"
+                      }
+                    },
+                    {
+                      "name": "comment",
+                      "type": "string"
+                    },
+                    {
+                      "name": "minutesSpent",
+                      "type": "int"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "watchers",
+              "type": ["int", "null"]
+            },
+            {
+              "name": "isWatching",
+              "type": ["boolean", "null"]
+            },
+            {
+              "name": "timeTracking",
+              "type": [{
+                "type": "record",
+                "name": "TimeTrackingRecord",
+                "fields": [
+                  {"name": "originalEstimateMinutes", "type": ["int", "null"]},
+                  {"name": "remainingEstimateMinutes", "type": ["int", "null"]},
+                  {"name": "timeSpentMinutes", "type": ["int", "null"]}
+                ]
+              }, "null"]
+            },
+            {
+              "name": "subtasks",
+              "type": [{
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "SubtaskRecord",
+                  "fields": [
+                    {
+                      "name": "key",
+                      "type": "string"
+                    },
+                    {
+                      "name": "summary",
+                      "type": "string"
+                    },
+                    {
+                      "name": "issueType",
+                      "type": "string"
+                    },
+                    {
+                      "name": "status",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }, "null"]
+            },
+            {
+              "name": "labels",
+              "type": {
+                "type": "array",
+                "items": "string"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "filters": [
+    {
+      "name": "Filter Mode 'Basic'",
+      "condition": {
+        "property": "filterMode",
+        "operator": "equal to",
+        "value": "Basic"
+      },
+      "show": [
+        {
+          "name": "projects",
+          "type": "property"
+        },
+        {
+          "name": "issueTypes",
+          "type": "property"
+        },
+        {
+          "name": "statuses",
+          "type": "property"
+        },
+        {
+          "name": "priorities",
+          "type": "property"
+        },
+        {
+          "name": "reporters",
+          "type": "property"
+        },
+        {
+          "name": "assignees",
+          "type": "property"
+        },
+        {
+          "name": "fixVersions",
+          "type": "property"
+        },
+        {
+          "name": "affectedVersions",
+          "type": "property"
+        },
+        {
+          "name": "labels",
+          "type": "property"
+        },
+        {
+          "name": "lastUpdateStartDate",
+          "type": "property"
+        },
+        {
+          "name": "lastUpdateEndDate",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "Filter Mode 'JQL'",
+      "condition": {
+        "property": "filterMode",
+        "operator": "equal to",
+        "value": "JQL"
+      },
+      "show": [
+        {
+          "name": "jqlQuery",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "Filter Mode 'JIRA Filter Id'",
+      "condition": {
+        "property": "filterMode",
+        "operator": "equal to",
+        "value": "JIRA Filter Id"
+      },
+      "show": [
+        {
+          "name": "jiraFilterId",
+          "type": "property"
+        }
+      ]
+    }
+  ]
+}
