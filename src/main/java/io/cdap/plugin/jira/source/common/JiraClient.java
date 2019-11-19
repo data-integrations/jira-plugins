@@ -21,13 +21,20 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 /**
  * A class which is used to communicate to Jira API based on the plugin configurations.
@@ -39,11 +46,35 @@ public class JiraClient implements Closeable {
   private static final ImmutableSet<String> MINIMAL_FIELDS_SET = ImmutableSet.of("project", "summary", "issuetype",
                                                                                  "created", "updated", "status");
 
-  private final JiraRestClient restClient;
-  private final BaseJiraSourceConfig config;
+  private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
+    "ORDER(\\s)+BY(\\s)+(\\w+)(,\\s*\\w+)*(\\s+ASC|\\s+DESC)*", Pattern.CASE_INSENSITIVE);
 
-  public JiraClient(BaseJiraSourceConfig config) {
+  private static final Logger LOG = LoggerFactory.getLogger(JiraClient.class);
+
+  private final JiraRestClient restClient;
+  private final JiraSourceConfig config;
+  private final String startFromCreateDate;
+  private final String queryOrderByPostfix;
+  private final String trackingField;
+
+  public JiraClient(JiraSourceConfig config) {
+    this(config, null, false);
+  }
+
+  public JiraClient(JiraSourceConfig config, @Nullable ZonedDateTime startFromCreateDate, Boolean trackUpdates) {
     this.config = config;
+
+    if (startFromCreateDate != null) {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+      this.startFromCreateDate = startFromCreateDate.format(formatter);
+
+      this.trackingField = trackUpdates ? "updatedDate" : "createdDate";
+      this.queryOrderByPostfix = String.format("ORDER BY %s ASC", trackingField);
+    } else {
+      this.startFromCreateDate = null;
+      this.trackingField = null;
+      this.queryOrderByPostfix = null;
+    }
 
     AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
     try {
@@ -70,16 +101,42 @@ public class JiraClient implements Closeable {
   }
 
   public String getJQLQuery() {
+    String query;
     switch (config.getFilterMode()) {
       case JQL:
-        return config.getJqlQuery();
+        query = config.getJqlQuery();
+        break;
       case JIRA_FILTER_ID:
-        return restClient.getSearchClient().getFilter(config.getJiraFilterId()).claim().getJql();
+        query = restClient.getSearchClient().getFilter(config.getJiraFilterId()).claim().getJql();
+        break;
       case BASIC:
-        return getBasicQuery();
+        query = getBasicQuery();
+        break;
       default:
         throw new IllegalArgumentException(String.format("Unsupported filter mode: '%s'", config.getFilterMode()));
     }
+
+    if (startFromCreateDate != null) {
+      String prefix = String.format("%s >= '%s'", trackingField, startFromCreateDate);
+
+      if (query.isEmpty()) {
+        query = prefix;
+      } else {
+        query = prefix + " AND " + query;
+      }
+    }
+
+    if (queryOrderByPostfix != null) {
+      Matcher matcher = ORDER_BY_PATTERN.matcher(query);
+
+      // if query already has ORDER BY than we need to replace it.
+      if (matcher.find()) {
+        query = matcher.replaceAll(queryOrderByPostfix);
+      } else {
+        query = query + " " + queryOrderByPostfix;
+      }
+    }
+    return query;
   }
 
   private String getBasicQuery() {

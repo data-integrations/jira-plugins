@@ -32,6 +32,7 @@ import io.cdap.cdap.etl.api.batch.BatchSource;
 import io.cdap.cdap.etl.api.batch.BatchSourceContext;
 import io.cdap.plugin.common.LineageRecorder;
 import io.cdap.plugin.jira.source.common.IssueToRecordTransformer;
+import io.cdap.plugin.jira.source.common.JiraSourceConfig;
 import org.apache.hadoop.io.NullWritable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +50,10 @@ public class JiraBatchSource extends BatchSource<NullWritable, Issue, Structured
   static final String NAME = "Jira";
   private static final Logger LOG = LoggerFactory.getLogger(JiraBatchSource.class);
 
-  private final JiraBatchSourceConfig config;
+  private final JiraSourceConfig config;
   private IssueToRecordTransformer transformer;
 
-  public JiraBatchSource(JiraBatchSourceConfig config) {
+  public JiraBatchSource(JiraSourceConfig config) {
     this.config = config;
   }
 
