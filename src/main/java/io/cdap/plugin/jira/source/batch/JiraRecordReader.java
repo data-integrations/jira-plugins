@@ -18,6 +18,7 @@ package io.cdap.plugin.jira.source.batch;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import io.cdap.plugin.jira.source.common.JiraClient;
+import io.cdap.plugin.jira.source.common.JiraSourceConfig;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
@@ -32,7 +33,7 @@ import java.util.Iterator;
  */
 public class JiraRecordReader extends RecordReader<NullWritable, Issue> {
   private static final Logger LOG = LoggerFactory.getLogger(JiraRecordReader.class);
-  private final JiraBatchSourceConfig config;
+  private final JiraSourceConfig config;
   private final int startAt;
 
   private Issue value;
@@ -41,7 +42,7 @@ public class JiraRecordReader extends RecordReader<NullWritable, Issue> {
   private int issuesCount;
   private int issueIndex = 0;
 
-  public JiraRecordReader(JiraBatchSourceConfig config, int startAt) {
+  public JiraRecordReader(JiraSourceConfig config, int startAt) {
     this.config = config;
     this.startAt = startAt;
   }

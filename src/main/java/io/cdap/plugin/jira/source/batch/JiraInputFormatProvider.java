@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.cdap.cdap.api.data.batch.InputFormatProvider;
+import io.cdap.plugin.jira.source.common.JiraSourceConfig;
 
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class JiraInputFormatProvider implements InputFormatProvider {
 
   private final Map<String, String> conf;
 
-  JiraInputFormatProvider(JiraBatchSourceConfig config) {
+  JiraInputFormatProvider(JiraSourceConfig config) {
     this.conf = new ImmutableMap.Builder<String, String>()
       .put(PROPERTY_CONFIG_JSON, GSON.toJson(config))
       .build();
