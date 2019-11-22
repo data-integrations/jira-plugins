@@ -32,9 +32,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * Provides commonthe configurations required for configuring batch and realtime jira source plugin.
+ * Provides common configurations required for configuring batch and realtime jira source plugin.
  */
-public abstract class BaseJiraSourceConfig extends ReferencePluginConfig {
+public class JiraSourceConfig extends ReferencePluginConfig {
   public static final String PROPERTY_JIRA_URL = "jiraUrl";
   public static final String PROPERTY_FILTER_MODE = "filterMode";
   public static final String PROPERTY_JIRA_FILTER_ID = "jiraFilterId";
@@ -51,7 +51,7 @@ public abstract class BaseJiraSourceConfig extends ReferencePluginConfig {
   @Name(PROPERTY_JIRA_URL)
   @Description("URL of JIRA instance.")
   @Macro
-  private String jiraUrl;
+  protected String jiraUrl;
 
   @Name(PROPERTY_FILTER_MODE)
   @Description("Mode which specifies which issues to fetch.\n" +
@@ -164,7 +164,7 @@ public abstract class BaseJiraSourceConfig extends ReferencePluginConfig {
   @Description("Defines the output schema")
   private String schema;
 
-  public BaseJiraSourceConfig(String referenceName) {
+  public JiraSourceConfig(String referenceName) {
     super(referenceName);
   }
 

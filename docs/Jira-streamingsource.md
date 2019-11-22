@@ -1,8 +1,8 @@
-# Jira Batch Source
+# Jira Streaming Source
 
 Description
 -----------
-The plugin fetches issues from JIRA in a parallel fashion.
+The plugin fetches issues from JIRA.
 JQL, existing JIRA filters, or custom filters can be used in order to read a subset of issues.
 
 
@@ -23,6 +23,8 @@ Properties
 If both username and password are not set, JIRA will be accessed via anonymous user.
 
 ### Advanced
+
+**Track Updates:** If enabled, source will track updates of issues, not only their creations.
 
 **Filter Mode:** Mode which specifies which issues to fetch.
 Possible values are:
@@ -79,8 +81,8 @@ If empty will get all the issues from JIRA instance.
 
 **Jira Filter Id:** Numerical id of an existing JIRA filter.
 
-**Max Split Size:** Maximum number of issues to fetch in a single request. 
-A value of zero means there is no limit.
+**Max Issues Per Request:** Maximum number of issues to fetch in a single request. 
+A value of zero means all.
 
 
 **Schema:** Output schema. Fields can be removed from it, if particular information is not needed.

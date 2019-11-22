@@ -88,6 +88,7 @@
     <httpclient.version>4.5.10</httpclient.version>
     <jira.client.verison>5.1.6</jira.client.verison>
     <junit.version>4.11</junit.version>
+    <spark2.version>2.1.3</spark2.version>
   </properties>
 
   <dependencies>
@@ -110,26 +111,13 @@
     </dependency>
     <dependency>
       <groupId>io.cdap.cdap</groupId>
-      <artifactId>cdap-unit-test</artifactId>
+      <artifactId>cdap-etl-api-spark</artifactId>
       <version>${cdap.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <groupId>io.cdap.cdap</groupId>
-      <artifactId>cdap-data-pipeline</artifactId>
-      <version>${cdap.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.cdap.cdap</groupId>
-      <artifactId>cdap-formats</artifactId>
-      <version>${cdap.version}</version>
+      <groupId>io.cdap.plugin</groupId>
+      <artifactId>hydrator-common</artifactId>
+      <version>${hydrator.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
@@ -244,9 +232,10 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>io.cdap.plugin</groupId>
-      <artifactId>hydrator-common</artifactId>
-      <version>${hydrator.version}</version>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_2.11</artifactId>
+      <version>${spark2.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -270,10 +259,66 @@
       <version>1.13</version>
     </dependency>
 
+
+    <!-- tests -->
+    <dependency>
+      <groupId>io.cdap.cdap</groupId>
+      <artifactId>cdap-metadata-spi</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cdap.cdap</groupId>
+      <artifactId>cdap-common</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.twill</groupId>
+          <artifactId>twill-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.twill</groupId>
+          <artifactId>twill-yarn</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.cdap.cdap</groupId>
+      <artifactId>cdap-etl-proto</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>io.cdap.cdap</groupId>
       <artifactId>hydrator-test</artifactId>
       <version>${cdap.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.cdap.cdap</groupId>
+          <artifactId>cdap-api-spark</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.cdap.cdap</groupId>
+          <artifactId>cdap-spark-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.kafka</groupId>
+          <artifactId>kafka_2.10</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cdap.cdap</groupId>
+      <artifactId>cdap-data-pipeline2_2.11</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -281,6 +326,73 @@
       <artifactId>awaitility</artifactId>
       <version>4.0.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cdap.cdap</groupId>
+      <artifactId>cdap-data-streams2_2.11</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.cdap.cdap</groupId>
+      <artifactId>cdap-spark-core2_2.11</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.11</artifactId>
+      <version>${spark2.version}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.esotericsoftware.reflectasm</groupId>
+          <artifactId>reflectasm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.curator</groupId>
+          <artifactId>curator-recipes</artifactId>
+        </exclusion>
+        <!-- excludes scala-compiler and scala-reflect to avoid conflicting with the one from spark-repl -->
+        <exclusion>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-compiler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-reflect</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.orbit</groupId>
+          <artifactId>javax.servlet</artifactId>
+        </exclusion>
+        <!--
+          Need to exclude this since Spark brings in an older version that makes
+          S3 not work in local sandbox. This doesn't affect distributed mode.
+        -->
+        <exclusion>
+          <groupId>net.java.dev.jets3t</groupId>
+          <artifactId>jets3t</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 

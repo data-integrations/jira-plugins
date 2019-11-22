@@ -19,6 +19,7 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.cdap.plugin.jira.source.common.JiraClient;
+import io.cdap.plugin.jira.source.common.JiraSourceConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.InputFormat;
@@ -46,7 +47,7 @@ public class JiraInputFormat extends InputFormat {
   public List<InputSplit> getSplits(JobContext jobContext) {
     Configuration configuration = jobContext.getConfiguration();
     String configJson = configuration.get(JiraInputFormatProvider.PROPERTY_CONFIG_JSON);
-    JiraBatchSourceConfig config = GSON.fromJson(configJson, JiraBatchSourceConfig.class);
+    JiraSourceConfig config = GSON.fromJson(configJson, JiraSourceConfig.class);
 
     Integer maxSplitSize = config.getMaxIssuesPerRequest();
     if (config.isUnlimitedMaxIssues()) {
@@ -76,7 +77,7 @@ public class JiraInputFormat extends InputFormat {
 
     Configuration configuration = taskAttemptContext.getConfiguration();
     String configJson = configuration.get(JiraInputFormatProvider.PROPERTY_CONFIG_JSON);
-    JiraBatchSourceConfig config = GSON.fromJson(configJson, JiraBatchSourceConfig.class);
+    JiraSourceConfig config = GSON.fromJson(configJson, JiraSourceConfig.class);
 
     return new JiraRecordReader(config, ((JiraSplit) inputSplit).getStartAt());
   }
