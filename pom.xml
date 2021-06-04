@@ -85,7 +85,7 @@
     <guava.version>20.0</guava.version>
     <hadoop.version>2.3.0</hadoop.version>
     <hydrator.version>2.3.0-SNAPSHOT</hydrator.version>
-    <httpclient.version>4.5.10</httpclient.version>
+    <httpclient.version>4.5.13</httpclient.version>
     <jira.client.verison>5.1.6</jira.client.verison>
     <junit.version>4.11</junit.version>
   </properties>
